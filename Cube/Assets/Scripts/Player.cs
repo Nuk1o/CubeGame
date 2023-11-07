@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -9,13 +8,15 @@ public class Player : MonoBehaviour
     [Space]
     [SerializeField] private TouchSlider _touchSlider;
 
-    [SerializeField] private Cube _mainCube;
+    private Cube _mainCube;
 
     private bool _isPointerDown;
     private Vector3 _cubePos;
 
     private void Start()
     {
+        SpawnCube();
+        
         _touchSlider.OnPointerDownEvent += OnPointerDown;
         _touchSlider.OnPointerDragEvent += OnPointerDrag;
         _touchSlider.OnPointerUpEvent += OnPointerUp;
@@ -47,7 +48,23 @@ public class Player : MonoBehaviour
         {
             _isPointerDown = false;
             _mainCube.cubeRigidBody.AddForce(Vector3.forward*_pushForce, ForceMode.Impulse);
+            
+            Invoke("SpawnNewCube",0.3f);
         }
+    }
+
+    private void SpawnNewCube()
+    {
+        _mainCube.isMainCube = false;
+        SpawnCube();
+    }
+
+    private void SpawnCube()
+    {
+        _mainCube = CubeSpawner.Instance.SpawnRandom();
+        _mainCube.isMainCube = true;
+
+        _cubePos = _mainCube.transform.position;
     }
 
     private void OnDestroy()
